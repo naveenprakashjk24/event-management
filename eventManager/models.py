@@ -1,9 +1,7 @@
-from datetime import datetime
+import datetime
 
 from database import Base
-from h11 import Data
-from sqlalchemy import (Boolean, Column, DateTime, ForeignKey, Integer, String,
-                        func)
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 
@@ -16,7 +14,7 @@ class Event(Base):
     description = Column(String)
     location = Column(String)
     available_tickets = Column(Integer)
-    created_on = Column(DateTime, default=datetime.now)
+    created_on = Column(DateTime, default=datetime.datetime.now())
     event_expiry_on = Column(DateTime, default=False)
     user_id = Column(Integer, ForeignKey('users.id'))
 

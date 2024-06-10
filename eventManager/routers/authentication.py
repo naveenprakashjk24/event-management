@@ -1,7 +1,7 @@
 
 import database
 import models
-from auth import token
+import tokens
 from auth.hashing import Hash
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -21,7 +21,7 @@ def login(request:OAuth2PasswordRequestForm = Depends(), db: Session = Depends(d
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Invalid username/password")
 
     # access_token_expires = timedelta(minutes=token.ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = token.create_access_token(
-        data={"sub": user.email, "id":user.id}
+    access_token = tokens.create_access_token(
+        data={"sub": user.email, "id":user.id, 'is_admin': user.is_admin}
     )
     return {"access_token": access_token, "token_type": "bearer"}
