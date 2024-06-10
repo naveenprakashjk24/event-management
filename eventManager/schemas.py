@@ -1,26 +1,54 @@
 from datetime import datetime
+from decimal import Decimal
 
 from pydantic import BaseModel
 
 
 class Event(BaseModel):
-
     name : str
     description : str
     location : str
+    price: Decimal
     available_tickets : int
-    created_on : datetime
-    event_expiry_on : datetime
+
+class EventList(BaseModel):
+    id: int
+    name : str
+    description : str
+    location : str
+    price: Decimal
+    available_tickets : int
 
 class BaseEvent(Event):
     name: str
     description: str
     location: str
+    price: Decimal
     available_tickets: int
     created_on : datetime
-    event_expiry_on: datetime
     class Config():
         from_attributues = True
+
+
+class Booking(BaseModel):
+    user_id : int
+    event_id : int
+    ticket:int
+    price: Decimal
+
+class BookingTicket(BaseModel):
+    event_id: int
+    ticket:int
+
+class ShowBooking(Booking):
+    user_id: int
+    event_id : int
+    ticket:int
+    price: Decimal
+    created_on: datetime
+    class Config():
+        from_attributues = True
+
 
 class User(BaseModel):
     name: str
@@ -28,11 +56,6 @@ class User(BaseModel):
     password : str
     is_admin : int
 
-class UserBase(User):
-    name: str
-    email: str
-    class Config():
-        from_attributes = True
 
 class ShowUser(BaseModel):
     name: str

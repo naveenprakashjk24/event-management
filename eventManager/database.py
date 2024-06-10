@@ -4,12 +4,9 @@ from sqlalchemy.orm import sessionmaker
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./emanager.db"
 
-#Postgres connection
-# SQLALCHEMY_DATABASE_URL = "postgresql://postgres:jkn;@localhost/TodoApplication"
 
-#Db connection
+
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
-# engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 #create session
 sessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False,)
