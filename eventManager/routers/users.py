@@ -25,7 +25,7 @@ router = APIRouter(
 )
 
 @router.post('/create', status_code=status.HTTP_201_CREATED, response_model=schemas.ShowUser)
-def createUser(request:schemas.User, db: Session = Depends(database.get_db)):
+def create_user(request:schemas.User, db: Session = Depends(database.get_db)):
 
     if not checkEmail(request.email):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Invalid email address')
@@ -43,7 +43,7 @@ def createUser(request:schemas.User, db: Session = Depends(database.get_db)):
 
 
 @router.get('/list', status_code=status.HTTP_200_OK, response_model=List[schemas.ShowUser])
-def userList(db: Session = Depends(database.get_db), current_user:schemas.ShowUser = Depends(oauth2.get_current_user)):
+def user_list(db: Session = Depends(database.get_db), current_user:schemas.ShowUser = Depends(oauth2.get_current_user)):
     admin_user = db.query(models.User).filter(models.User.id == current_user.get('id')).first()
     if admin_user.is_admin:
         users = db.query(models.User).all()

@@ -19,6 +19,10 @@ class EventList(BaseModel):
     price: Decimal
     available_tickets : int
 
+class UpdateEvent(BaseModel):
+    price: Decimal
+    available_tickets : int
+
 class BaseEvent(Event):
     name: str
     description: str
