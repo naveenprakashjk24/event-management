@@ -20,7 +20,9 @@ def allEvents(db: Session = Depends(database.get_db),current_user:schemas.Event 
 
 @router.post('/create', status_code=status.HTTP_201_CREATED, response_model=schemas.BaseEvent)
 def createEvent(request:schemas.Event, db: Session = Depends(database.get_db), current_user:schemas.ShowUser = Depends(oauth2.get_current_user)):
-    if current_user.get('is_admin'):
+    admin_user =  db.query(models.User).filter(models.User.id == current_user.get('id')).first()
+
+    if admin_user.is_admin:
 
             if request.available_tickets <=0:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Enter ticket counts more than 0.")
@@ -37,7 +39,7 @@ def createEvent(request:schemas.Event, db: Session = Depends(database.get_db), c
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User don't have a permission to create an event")
 
 @router.get('/{id}', status_code=status.HTTP_200_OK, response_model=schemas.Event)
-def eventInfo(id:int, db: Session = Depends(database.get_db)):
+def eventInfo(id:int, db: Session = Depends(database.get_db), current_user:schemas.ShowUser = Depends(oauth2.get_current_user)):
     event = db.query(models.Event).filter(models.Event.id == id).first()
     if not event:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Event Not found')

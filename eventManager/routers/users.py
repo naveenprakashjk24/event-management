@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 import database
 import models
 import schemas
+from auth import oauth2
 from auth.hashing import Hash
 
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
@@ -42,6 +43,10 @@ def createUser(request:schemas.User, db: Session = Depends(database.get_db)):
 
 
 @router.get('/list', status_code=status.HTTP_200_OK, response_model=List[schemas.ShowUser])
-def userList(db: Session = Depends(database.get_db)):
-    users = db.query(models.User).all()
-    return users
+def userList(db: Session = Depends(database.get_db), current_user:schemas.ShowUser = Depends(oauth2.get_current_user)):
+    admin_user = db.query(models.User).filter(models.User.id == current_user.get('id')).first()
+    if admin_user.is_admin:
+        users = db.query(models.User).all()
+        return users
+    else:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Don't have a permission to list the users.")
