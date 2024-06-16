@@ -20,16 +20,16 @@ def allEvents(db: Session = Depends(database.get_db),current_user:schemas.Event 
 
 @router.post('/create', status_code=status.HTTP_201_CREATED, response_model=schemas.BaseEvent)
 def createEvent(request:schemas.Event, db: Session = Depends(database.get_db), current_user:schemas.ShowUser = Depends(oauth2.get_current_user)):
+
+    if request.available_tickets <=0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Enter ticket counts greater than 0.")
+
+    if request.price <= 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Enter ticket price greater than 0.")
+
     admin_user =  db.query(models.User).filter(models.User.id == current_user.get('id')).first()
 
     if admin_user.is_admin:
-
-            if request.available_tickets <=0:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Enter ticket counts more than 0.")
-
-            if request.price <= 0:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Enter ticket price more than 0.")
-
             new_event = models.Event(name=request.name, description=request.description, location= request.location, available_tickets= request.available_tickets, price=request.price, user_id=current_user.get('id'))
             db.add(new_event)
             db.commit()
