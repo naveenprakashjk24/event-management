@@ -50,3 +50,17 @@ def user_list(db: Session = Depends(database.get_db), current_user:schemas.ShowU
         return users
     else:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Don't have a permission to list the users.")
+
+@router.delete('/{id}', status_code=status.HTTP_200_OK)
+def user_list(id:int, db: Session = Depends(database.get_db), current_user:schemas.ShowUser = Depends(oauth2.get_current_user)):
+    admin_user = db.query(models.User).filter(models.User.id == current_user.get('id')).first()
+    if admin_user.is_admin:
+        user = db.query(models.User).filter(models.User.id == id)
+        if not user.first():
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User not found.")
+        else:
+            user.delete(synchronize_session=False)
+            db.commit()
+            return {'detail': 'user deleted successfully'}
+    else:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Don't have a permission to list the users.")
