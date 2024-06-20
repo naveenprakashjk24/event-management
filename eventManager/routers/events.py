@@ -2,14 +2,13 @@ from os import name
 from typing import List
 from zoneinfo import available_timezones
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from h11 import Event
-from sqlalchemy.orm import Session
-
 import database
 import models
 import schemas
 from auth import oauth2
+from fastapi import APIRouter, Depends, HTTPException, status
+from h11 import Event
+from sqlalchemy.orm import Session
 
 router = APIRouter(
     prefix='/event',
@@ -34,11 +33,11 @@ def create_event(request:schemas.Event, db: Session = Depends(database.get_db),
     admin_user =  db.query(models.User).filter(models.User.id == current_user.get('id')).first()
 
     if admin_user.is_admin:
-            new_event = models.Event(name=request.name, description=request.description, location= request.location, available_tickets= request.available_tickets, price=request.price, user_id=current_user.get('id'))
-            db.add(new_event)
-            db.commit()
-            db.refresh(new_event)
-            return new_event
+        new_event = models.Event(name=request.name, description=request.description, location= request.location, available_tickets= request.available_tickets, price=request.price, user_id=current_user.get('id'))
+        db.add(new_event)
+        db.commit()
+        db.refresh(new_event)
+        return new_event
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User don't have a permission to create an event")
 
